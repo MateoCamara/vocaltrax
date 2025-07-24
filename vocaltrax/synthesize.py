@@ -185,9 +185,17 @@ def main(cfg: Config) -> None:
                 os.path.join(log_dir, f"{i+1}.wav"), audio, sr
             )
 
-    # Save JAX params
-    with open(os.path.join(log_dir, "params.json"), "w") as f:
+    # Save normalized JAX params
+    with open(os.path.join(log_dir, "params_optimizer.json"), "w") as f:
         f.write(json.dumps(jax_to_numpy(params), indent=4))
+
+    # Save unnormalized params with frequencies for Pink Trombone
+    unnormalized_params = unnormalize_all_params(params['params'])
+    unnormalized_params['frequencies'] = freqs.tolist()
+
+    with open(os.path.join(log_dir, "params_pink_trombone.json"), "w") as f:
+        f.write(json.dumps(unnormalized_params, indent=4))
+
 
 if __name__ == "__main__":
     main()

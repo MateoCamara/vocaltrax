@@ -79,3 +79,50 @@ def jax_to_numpy(obj):
         return [jax_to_numpy(v) for v in obj]
     else:
         return obj
+
+def unnormalize_all_params(params):
+    unnormalized = {}
+
+    # Physical tract parameters
+    if 'physical' in params:
+        unnormalized['physical'] = {}
+        phys = params['physical']['params']
+
+        # Tongue parameters
+        if 'tongue' in phys:
+            unnormalized['physical']['tongue'] = {}
+            tongue = phys['tongue']['params']
+            if 'tongue_diam' in tongue:
+                unnormalized['physical']['tongue']['tongue_diam'] = jax_to_numpy(
+                    unnormalize_params(tongue['tongue_diam'], 2.05, 3.5)
+                )
+            if 'tongue_idx' in tongue:
+                unnormalized['physical']['tongue']['tongue_idx'] = jax_to_numpy(
+                    unnormalize_params(tongue['tongue_idx'], 12, 29)
+                )
+
+        # Throat constriction parameters
+        if 'throatconstriction' in phys:
+            unnormalized['physical']['throatconstriction'] = {}
+            throat = phys['throatconstriction']['params']
+            if 'constr_val' in throat:
+                unnormalized['physical']['throatconstriction']['constr_val'] = jax_to_numpy(
+                    1.5 - unnormalize_params(throat['constr_val'], -0.99, 0.99)
+                )
+
+        # Lip constriction parameters
+        if 'lipconstriction' in phys:
+            unnormalized['physical']['lipconstriction'] = {}
+            lip = phys['lipconstriction']['params']
+            if 'constr_val' in lip:
+                unnormalized['physical']['lipconstriction']['constr_val'] = jax_to_numpy(
+                    1.5 - unnormalize_params(lip['constr_val'], -0.99, 0.99)
+                )
+
+    # Tenseness parameters
+    if 'tenses' in params:
+        unnormalized['tenses'] = jax_to_numpy(
+            unnormalize_params(params['tenses'], 0.1, 1.0)
+        )
+
+    return unnormalized
