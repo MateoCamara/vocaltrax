@@ -39,7 +39,7 @@ from tqdm import tqdm
 from tract import VocalTract
 from utils.random import PRNGKey
 from utils.hydra import print_config
-from utils.misc import frameaudio, mse, jax_to_numpy
+from utils.misc import frameaudio, mse, jax_to_numpy, unnormalize_all_params
 
 config_store = hydra.core.config_store.ConfigStore.instance()
 config_store.store(name="base_config", node=Config)
